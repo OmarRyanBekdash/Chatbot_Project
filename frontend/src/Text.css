@@ -1,0 +1,9 @@
+.textContainer{
+  position: absolute;
+  left: 40%;
+  top:60%;
+  background-color: blue;
+  color: white;
+  font-size: 12px;
+  
+}

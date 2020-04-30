@@ -1,0 +1,15 @@
+{
+  "name": "Chatbot_Project",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "main": "index.js",
+  "repository": "https://github.com/OmarRyanBekdash/Chatbot_Project.git",
+  "author": "Omar Bekdash <ob47@cornell.edu>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "firebase-admin": "^8.11.0"
+  }
+}
