@@ -18,12 +18,14 @@ export default function SubmitText({ someText }) {
     setText(textDescrip);
 
   }
-  const createText = (event) => {
+  const createText = async (event) => {
     //helper function to get a computer response
-    let randomAnswer = getRandomAnswer(text);
+    let randomAnswer =  await getRandomAnswer(text);
+    console.log("random answer: " + randomAnswer)
     if (event.key === "Enter") {
-      console.log(randomAnswer)
+      console.log("random anser: " + randomAnswer)
       let updatedTextList = [...textList, text, randomAnswer]
+      console.log(updatedTextList)
       setText(''); //CLEAR INPUT FIELD
       setTextList(updatedTextList)
       console.log(updatedTextList)
@@ -70,7 +72,9 @@ export default function SubmitText({ someText }) {
 }
 
 
-function getRandomAnswer(text) {
+ async function getRandomAnswer(text) {
+  const r = await fetch('http://localhost:8080/getRandomResponse').then(res => res.json()).then(d => d.reply);
+  //console.log(r);
   let randomAnswers = genericAnswers;
   if (text === ("") || text.toLowerCase().indexOf(" ") === 0) {
     randomAnswers = ["Im sorry it doesn't look like you said anything. Can you speak louder?"];
@@ -96,7 +100,8 @@ function getRandomAnswer(text) {
     randomAnswers = schoolTopics;
   }
   let randomAnswer = randomAnswers[Math.floor(Math.random() * randomAnswers.length)];
-  return randomAnswer;
+  console.log("this is waht r looks like " + r);
+  return r;
 }
 
 

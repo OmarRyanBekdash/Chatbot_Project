@@ -23,4 +23,24 @@ app.post('/addReply', async (req, res) => {
   res.send(doc.id);
 })
 
+app.get('/getReplies', async (req, res) => {
+  console.log("getting all replies");
+  const replies = await replyCollection.get();
+  res.json(replies.docs.map(r => r.reply));
+})
+
+app.get('/getRandomResponse', async (req, res) => {
+  const replies = await replyCollection.get();
+  const arr = [];
+  for(let doc of replies.docs){
+    let reply = doc.data();
+    reply.id = doc.id;
+    arr.push(reply);
+  }
+
+  let randomIndex = Math.floor(Math.random() * arr.length);
+  //console.log("sending json " + arr[randomIndex].json);
+  res.send(arr[randomIndex]);
+})
+
 app.listen(port, () => console.log("backend starting"));
