@@ -3,11 +3,15 @@ import logo from './logo.svg';
 import './App.css';
 import Text from './Text.jsx';
 import SubmitText from './SubmitText.jsx';
+import Authenticated from './Authenticated.jsx';
 
 function App() {
   return (
     <div>
-      <SubmitText someText="RIP" />
+      <Authenticated>
+        <SubmitText someText="RIP" />
+      </Authenticated>
+
     </div>
   );
 }
