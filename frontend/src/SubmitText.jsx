@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import Text from './Text';
 import './SubmitText.css'
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
+
 
 const genericAnswers = ["I'm doing fine", "I'm alright", "Things are pretty crazy right now", "Hi!", "Well how are you?", "I kind of don't feel like talking right now"]
 const foodPreferences = ["I like pizza", "Apple pie is an oldie but a goodie", "To be honest that's a hard one to answer!"]
@@ -20,9 +23,10 @@ export default function SubmitText({ someText }) {
   }
   const createText = async (event) => {
     //helper function to get a computer response
-    let randomAnswer =  await getRandomAnswer(text);
-    console.log("random answer: " + randomAnswer)
+
+
     if (event.key === "Enter") {
+      var randomAnswer = await getRandomAnswer(text);
       console.log("random anser: " + randomAnswer)
       let updatedTextList = [...textList, text, randomAnswer]
       console.log(updatedTextList)
@@ -31,6 +35,7 @@ export default function SubmitText({ someText }) {
       console.log(updatedTextList)
     }
     else if (event.key === undefined) {
+      var randomAnswer = await getRandomAnswer(text);
       let updatedTextList = [...textList, text, randomAnswer]
       setText(""); //CLEAR INPUT FIELD
       setTextList(updatedTextList)
@@ -65,6 +70,7 @@ export default function SubmitText({ someText }) {
           onKeyPress={createText}
         />
       Check for bot to reply with your custom messages
+      <button onClick={() => firebase.auth().signOut()}> Sign Out </button>
       </div>
 
     </div>
@@ -72,8 +78,9 @@ export default function SubmitText({ someText }) {
 }
 
 
- async function getRandomAnswer(text) {
-  const r = await fetch('http://localhost:8080/getRandomResponse').then(res => res.json()).then(d => d.reply);
+async function getRandomAnswer(text) {
+  //run firebase deploy in frontend folder
+  const r = await fetch('https://quiet-ridge-95758.herokuapp.com/getRandomResponse').then(res => res.json()).then(d => d.reply);
   //console.log(r);
   let randomAnswers = genericAnswers;
   if (text === ("") || text.toLowerCase().indexOf(" ") === 0) {
