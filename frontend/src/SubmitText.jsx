@@ -12,38 +12,65 @@ const schoolTopics = ["I can multiply any number in less than a millisecond", "I
 
 
 
+
 export default function SubmitText({ someText }) {
-  const [text, setText] = useState("");
-
+  const [responseText, setResponseText] = useState("");
+  const [customText, setCustomText] = useState("");
+  const [toggleCustom, setToggle] = useState(false);
   const [textList, setTextList] = useState([])
-  const changeText = (event) => {
+  const changeResponseText = (event) => {
     const textDescrip = event.currentTarget.value;
-    setText(textDescrip);
-
+    setResponseText(textDescrip);
   }
-  const createText = async (event) => {
+  const createResponseText = async (event) => {
     //helper function to get a computer response
 
 
     if (event.key === "Enter") {
-      var randomAnswer = await getRandomAnswer(text);
+      var randomAnswer = await getRandomAnswer(responseText);
       console.log("random anser: " + randomAnswer)
-      let updatedTextList = [...textList, text, randomAnswer]
+      let updatedTextList = [...textList, responseText, randomAnswer]
       console.log(updatedTextList)
-      setText(''); //CLEAR INPUT FIELD
+      setResponseText(''); //CLEAR INPUT FIELD
       setTextList(updatedTextList)
       console.log(updatedTextList)
     }
     else if (event.key === undefined) {
-      var randomAnswer = await getRandomAnswer(text);
-      let updatedTextList = [...textList, text, randomAnswer]
-      setText(""); //CLEAR INPUT FIELD
+      var randomAnswer = await getRandomAnswer(responseText, toggleCustom);
+      let updatedTextList = [...textList, responseText, randomAnswer]
+      setResponseText(""); //CLEAR INPUT FIELD
       setTextList(updatedTextList)
     }
   }
+
+  const changeCustomText = (event) => {
+    const textDescrip = event.currentTarget.value;
+    setCustomText(textDescrip);
+  }
+s
+  const createCustomText = async (event) => {
+    //helper function to get a computer response
+
+
+    if (event.key === "Enter") {
+      //TODO: MAKE A POST REQUEST TO BACKEND
+      setCustomText(''); //CLEAR INPUT FIELD
+      console.log("added to backend!")
+    }
+    else if (event.key === undefined) {
+      //TODO: MAKE A POST REQUEST TO BACKEND
+      setCustomText(""); //CLEAR INPUT FIELD
+      console.log("added to back end!")
+    }
+  }
+
+
+
   const handleCheck = (event) => {
     console.log(event.target);
-    console.log(event.target.checked)
+    console.log(event.target.checked);
+    setToggle(event.target.checked);
+    console.log("current custom toggle: ", toggleCustom)
   }
 
 
@@ -57,30 +84,41 @@ export default function SubmitText({ someText }) {
       <input
         type="text"
         placeholder="Type a text"
-        value={text}
-        onChange={changeText}
-        onKeyPress={createText}
+        value={responseText}
+        onChange={changeResponseText}
+        onKeyPress={createResponseText}
       />
-      <button onClick={createText}> Add Text</button>
+      <button onClick={createResponseText}> Add Text</button>
       <div>
         <input
           type="checkbox"
-          value={text}
+          value={responseText}
           onChange={handleCheck}
-          onKeyPress={createText}
+          onKeyPress={createResponseText}
         />
       Check for bot to reply with your custom messages
       <button onClick={() => firebase.auth().signOut()}> Sign Out </button>
       </div>
 
+      <div>
+        <input
+          type="text"
+          placeholder="add a custom message!"
+          value={customText}
+          onChange={changeCustomText}
+          onKeyPress={createCustomText}
+        />
+        <button onClick={createCustomText}> Submit Text</button>
+      </div>
     </div>
+
   );
 }
 
 
-async function getRandomAnswer(text) {
+async function getRandomAnswer(text, tc) {
   //run firebase deploy in frontend folder
-  const r = await fetch('https://quiet-ridge-95758.herokuapp.com/getRandomResponse').then(res => res.json()).then(d => d.reply);
+  const r = (!tc)?null:await fetch('https://quiet-ridge-95758.herokuapp.com/getRandomResponse').then(res => res.json()).then(d => d.reply);
   //console.log(r);
   let randomAnswers = genericAnswers;
   if (text === ("") || text.toLowerCase().indexOf(" ") === 0) {
@@ -107,8 +145,8 @@ async function getRandomAnswer(text) {
     randomAnswers = schoolTopics;
   }
   let randomAnswer = randomAnswers[Math.floor(Math.random() * randomAnswers.length)];
-  console.log("this is waht r looks like " + r);
-  return r;
+  //console.log("this is waht r looks like " + r);
+  return r||randomAnswer;
 }
 
 
