@@ -6,10 +6,12 @@ import SubmitText from './SubmitText.jsx';
 import Authenticated from './Authenticated.jsx';
 
 function App() {
+
   return (
     <div>
+
       <Authenticated>
-        <SubmitText someText="RIP" />
+        <SubmitText someText="" />
       </Authenticated>
 
     </div>

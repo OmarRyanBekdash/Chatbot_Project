@@ -3,6 +3,7 @@ import Text from './Text';
 import './SubmitText.css'
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
+// import 'Authenticated.jsx'
 
 
 const genericAnswers = ["I'm doing fine", "I'm alright", "Things are pretty crazy right now", "Hi!", "Well how are you?", "I kind of don't feel like talking right now"]
@@ -47,18 +48,26 @@ export default function SubmitText({ someText }) {
     const textDescrip = event.currentTarget.value;
     setCustomText(textDescrip);
   }
-s
+
   const createCustomText = async (event) => {
     //helper function to get a computer response
 
 
     if (event.key === "Enter") {
       //TODO: MAKE A POST REQUEST TO BACKEND
+      let userName = firebase.auth().currentUser.email.replace(".", "").replace("@", "");
+      await fetch(`https://quiet-ridge-95758.herokuapp.com/addReply?user=` + userName + `&reply=` + customText, {
+        method: 'PUT'
+      })
       setCustomText(''); //CLEAR INPUT FIELD
       console.log("added to backend!")
     }
     else if (event.key === undefined) {
       //TODO: MAKE A POST REQUEST TO BACKEND
+      let userName = firebase.auth().currentUser.email.replace(".", "").replace("@", "");
+      await fetch(`https://quiet-ridge-95758.herokuapp.com/addReply?user=` + userName + `&reply=` + customText, {
+        method: 'PUT'
+      })
       setCustomText(""); //CLEAR INPUT FIELD
       console.log("added to back end!")
     }
@@ -75,12 +84,16 @@ s
 
 
   return (
-    <div className="inputTextContainer">
-      {
-        textList.map((desc, index) => (
-          <Text key={index} desc={desc} />
-        ))
-      }
+
+    <div className="submitTextContainer">
+      <div className="everyTextContainer">
+        {
+          textList.map((desc, index) => (
+            <Text key={index} desc={desc} />
+          ))
+        }
+      </div>
+
       <input
         type="text"
         placeholder="Type a text"
@@ -89,17 +102,7 @@ s
         onKeyPress={createResponseText}
       />
       <button onClick={createResponseText}> Add Text</button>
-      <div>
-        <input
-          type="checkbox"
-          value={responseText}
-          onChange={handleCheck}
-          onKeyPress={createResponseText}
-        />
-      Check for bot to reply with your custom messages
       <button onClick={() => firebase.auth().signOut()}> Sign Out </button>
-      </div>
-
       <div>
         <input
           type="text"
@@ -118,8 +121,19 @@ s
 
 async function getRandomAnswer(text, tc) {
   //run firebase deploy in frontend folder
-  const r = (!tc)?null:await fetch('https://quiet-ridge-95758.herokuapp.com/getRandomResponse').then(res => res.json()).then(d => d.reply);
-  //console.log(r);
+  //console.log(firebase.auth().currentUser.email)
+  let userName = firebase.auth().currentUser.email.replace(".", "").replace("@", "");
+  //console.log("NAME " + userName);
+  //let r = (!tc) ? null : await fetch('https://quiet-ridge-95758.herokuapp.com/getRandomResponse?user=' + userName).then(res => res.json()).then(d => d.reply);
+  let link = 'https://quiet-ridge-95758.herokuapp.com/getRandomResponse?user=' + userName
+  let r = await fetch(link).then(res => res.json())
+  console.log(r)
+  let replyArray = (r._fieldsProto.reply.arrayValue.values)
+  let randomIndex = Math.floor(Math.random() * replyArray.length);
+  console.log("random resp" + replyArray[randomIndex].stringValue);
+  let randomDatabaseResponse = replyArray[randomIndex].stringValue;
+
+  ///HARDCODE CODE BELOW
   let randomAnswers = genericAnswers;
   if (text === ("") || text.toLowerCase().indexOf(" ") === 0) {
     randomAnswers = ["Im sorry it doesn't look like you said anything. Can you speak louder?"];
@@ -145,8 +159,9 @@ async function getRandomAnswer(text, tc) {
     randomAnswers = schoolTopics;
   }
   let randomAnswer = randomAnswers[Math.floor(Math.random() * randomAnswers.length)];
-  //console.log("this is waht r looks like " + r);
-  return r||randomAnswer;
+  //HARDCODE END
+  console.log("this is waht r looks like " + r);
+  return randomDatabaseResponse || randomAnswer;
 }
 
 
